@@ -26,7 +26,7 @@ class TimerNode(Node):
         super().__init__('timer_node')
         
         # Declare parameters
-        self.declare_parameter('IP', '192.168.194.96')
+        self.declare_parameter('IP', "192.168.1.233")#'192.168.194.96') # Change to the sonar ip
         self.declare_parameter('speed', 1491)    # setting this takes ~20s
 
         self.sonar_ip = self.get_parameter('IP').get_parameter_value().string_value
@@ -42,8 +42,8 @@ class TimerNode(Node):
         self.publisher_ = self.create_publisher(PointCloud2, 'sonar_point_cloud', 10)
 
         # Enable the acoustics on the sonar
-        resp = set_acoustics(self.sonar_ip, self.sonar_speed)
-        self.get_logger().info(f'Enabling acoustics response: {describe_response(resp)}')
+        resp = set_acoustics(self.sonar_ip, True)
+        self.get_logger().info(f'Enabling acoustics response: {describe_response(self.sonar_ip, resp)}')
 
         # Set up a UDP socket with multicast membership
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
