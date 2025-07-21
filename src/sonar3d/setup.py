@@ -25,7 +25,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'replay_file = sonar3d.file_replay:main',
             'sonar_publisher = sonar3d.multicast_listener:main'
         ],
     },

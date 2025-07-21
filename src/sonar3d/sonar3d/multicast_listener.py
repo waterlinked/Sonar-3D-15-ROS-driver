@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 
 from sensor_msgs.msg import PointCloud2
+from sensor_msgs.msg import Image
 from sensor_msgs_py import point_cloud2
 from std_msgs.msg import Header
 
@@ -9,6 +10,7 @@ from sonar3d.api.inspect_sonar_data import parse_rip1_packet, decode_protobuf_pa
 from sonar3d.api.interface_sonar_api import set_acoustics, describe_response
 import socket
 import struct
+import numpy as np
 
 # Multicast group and port used by the Sonar 3D-15
 MULTICAST_GROUP = '224.0.0.96'
@@ -39,7 +41,9 @@ class TimerNode(Node):
         self.get_logger().info(f'Timer Node initialized with {1/sample_time} Hz')
 
         # Create a publisher that publishes the point cloud data
-        self.publisher_ = self.create_publisher(PointCloud2, 'sonar_point_cloud', 10)
+        self.pointcloud_publisher_ = self.create_publisher(PointCloud2, 'sonar_point_cloud', 10)
+        self.image_publisher_ = self.create_publisher(Image, 'sonar_range_image', 10)
+
 
         # Enable the acoustics on the sonar
         resp = set_acoustics(self.sonar_ip, True)
@@ -89,14 +93,25 @@ class TimerNode(Node):
             # Create the msg header
             header = Header()
             header.stamp = self.get_clock().now().to_msg()  # Use ROS2 time
-            # header.stamp = msg_obj.header.timestamp.ToNanoseconds()  # Use the timestamp from the message
             header.frame_id = 'sonar_frame'
 
-            msg = point_cloud2.create_cloud_xyz32(header, pts)
+            cloud_msg = point_cloud2.create_cloud_xyz32(header, pts)
 
             # Publish the PointCloud2 message
-            self.publisher_.publish(msg)
+            self.pointcloud_publisher_.publish(cloud_msg)
             self.get_logger().info(f'Published PointCloud2 message with {len(voxels)} points')
+
+            # Publish the raw range image
+            img_msg = Image()
+            img_msg.header = header
+            img_msg.height = msg_obj.height
+            img_msg.width = msg_obj.width
+            img_msg.encoding = '32FC1'
+            img_msg.is_bigendian = False
+            img_msg.step = msg_obj.width * 4
+            img_msg.data = np.array(msg_obj.range_image, dtype=np.float32).tobytes()
+            img_msg.data = (np.array(msg_obj.range_image, dtype=np.uint32) * msg_obj.image_pixel_scale).astype(np.float32).tobytes()
+            self.image_publisher_.publish(img_msg)
 
         
         
