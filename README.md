@@ -39,7 +39,7 @@ Change to your sonars IP-address in the multicast_listner.py file:
     self.declare_parameter('IP', '192.168.194.96') #  <-- your sonar's IP here
 ```
 
-The default is the fallback IP.
+The fallback IP of the Sonar 3D-15 is the default.
 
 ### 2. Build the package
 
