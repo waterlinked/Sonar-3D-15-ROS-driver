@@ -24,6 +24,12 @@ USAGE:
 import requests
 
 
+integration_api_payload = {
+    "mode": "disabled",
+    "unicast_destination_ip": "",
+    "unicast_destination_port": 0
+}
+
 def get_about(ip: str) -> str:
     """
     Get system version, order it in a readable format and return it.
@@ -99,6 +105,17 @@ def set_acoustics(ip: str, value: bool) -> requests.models.Response:
 
     return post
 
+def set_multicast(ip: str) -> requests.models.Response:
+    integration_api_payload["mode"] = "multicast"
+    post = requests.post(f"http://{ip}/api/v1/integration/udp", json=integration_api_payload)
+
+    return post
+
+def disable_multicast(ip: str):
+    integration_api_payload["mode"] = "disable"
+    post = requests.post(f"http://{ip}/api/v1/integration/udp", json=integration_api_payload)
+
+    return post
 
 def describe_response(endpoint: str, response: requests.models.Response) -> None:
     """

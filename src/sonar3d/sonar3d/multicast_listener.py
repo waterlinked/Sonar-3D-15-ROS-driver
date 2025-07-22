@@ -7,7 +7,7 @@ from sensor_msgs_py import point_cloud2
 from std_msgs.msg import Header
 
 from sonar3d.api.inspect_sonar_data import parse_rip1_packet, decode_protobuf_packet, rangeImageToXYZ
-from sonar3d.api.interface_sonar_api import set_acoustics, describe_response
+from sonar3d.api.interface_sonar_api import set_acoustics, describe_response, set_multicast
 import socket
 import struct
 import numpy as np
@@ -16,6 +16,8 @@ import numpy as np
 MULTICAST_GROUP = '224.0.0.96'
 PORT = 4747
 
+# Listen to all IPs by default, or set to a specific IP.
+SONAR_IP = "192.168.1.233"
 
 # The maximum possible packet size for Sonar 3D-15 data
 BUFFER_SIZE = 65535
@@ -26,11 +28,12 @@ class TimerNode(Node):
         super().__init__('timer_node')
         
         # Declare parameters
-        self.declare_parameter('IP', '192.168.194.96') #  <-- your sonar's IP here
+        self.declare_parameter('IP', SONAR_IP)#'192.168.194.96') #  <-- your sonar's IP here
         self.declare_parameter('speed', 1491)    # setting this takes ~20s
 
         self.sonar_ip = self.get_parameter('IP').get_parameter_value().string_value
         self.sonar_speed = self.get_parameter('speed').get_parameter_value().integer_value
+        # SONAR_IP = self.sonar_ip
 
         # Create a timer that calls the timer_callback every sample_time seconds 
         sample_time = 0.01          # sample time in seconds
@@ -41,7 +44,7 @@ class TimerNode(Node):
         self.pointcloud_publisher_ = self.create_publisher(PointCloud2, 'sonar_point_cloud', 10)
         self.image_publisher_ = self.create_publisher(Image, 'sonar_range_image', 10)
 
-
+        print("multicast response", set_multicast(self.sonar_ip))
         # Enable the acoustics on the sonar
         resp = set_acoustics(self.sonar_ip, True)
         self.get_logger().info(f'Enabling acoustics response: {describe_response(self.sonar_ip, resp)}')
@@ -57,9 +60,20 @@ class TimerNode(Node):
 
         self.get_logger().info(f"Listening for Sonar 3D-15 RIP1 packets on {MULTICAST_GROUP}:{PORT}...")
 
+        print("hei", SONAR_IP)
+
+        if SONAR_IP != "":
+            self.get_logger().info(f"Filtering packets from IP: {SONAR_IP}")
+
 
     def timer_callback(self):
+        print("hei2", SONAR_IP)
+
         data, addr = self.sock.recvfrom(BUFFER_SIZE)
+        print(addr)
+        # If SONAR_IP is configured, and this doesn't match the known Sonar IP, skip it.
+        if SONAR_IP != "" and addr[0] != SONAR_IP:
+            return
 
         payload = parse_rip1_packet(data)
         if payload is None:
