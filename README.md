@@ -31,7 +31,17 @@ The driver listens to RIP1 multicast packets, extracts and parses `RangeImage` p
 
 ## Usage
 
-### 1. Clone and build the package
+### 1. Clone and Set IP-address of Sonar 3D-15
+
+Change to your sonars IP-address in the multicast_listner.py file:
+
+```python
+    self.declare_parameter('IP', '192.168.194.96') #  <-- your sonar's IP here
+```
+
+The default is the fallback IP.
+
+### 2. Build the package
 
 ```bash
 cd ~/ros2_ws/src
