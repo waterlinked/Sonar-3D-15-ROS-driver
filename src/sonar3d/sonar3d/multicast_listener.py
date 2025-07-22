@@ -16,8 +16,6 @@ import numpy as np
 MULTICAST_GROUP = '224.0.0.96'
 PORT = 4747
 
-# Listen to all IPs by default, or set to a specific IP.
-SONAR_IP = ""
 
 # The maximum possible packet size for Sonar 3D-15 data
 BUFFER_SIZE = 65535
@@ -28,12 +26,11 @@ class TimerNode(Node):
         super().__init__('timer_node')
         
         # Declare parameters
-        self.declare_parameter('IP', "192.168.1.233")#'192.168.194.96') # Change to the sonar ip
+        self.declare_parameter('IP', '192.168.194.96') #  <-- your sonar's IP here
         self.declare_parameter('speed', 1491)    # setting this takes ~20s
 
         self.sonar_ip = self.get_parameter('IP').get_parameter_value().string_value
         self.sonar_speed = self.get_parameter('speed').get_parameter_value().integer_value
-        SONAR_IP = self.sonar_ip
 
         # Create a timer that calls the timer_callback every sample_time seconds 
         sample_time = 0.01          # sample time in seconds
@@ -59,16 +56,10 @@ class TimerNode(Node):
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
         self.get_logger().info(f"Listening for Sonar 3D-15 RIP1 packets on {MULTICAST_GROUP}:{PORT}...")
-        if SONAR_IP != "":
-            self.get_logger().info(f"Filtering packets from IP: {SONAR_IP}")
 
 
     def timer_callback(self):
         data, addr = self.sock.recvfrom(BUFFER_SIZE)
-
-        # If SONAR_IP is configured, and this doesn't match the known Sonar IP, skip it.
-        if SONAR_IP != "" and addr[0] != SONAR_IP:
-            return
 
         payload = parse_rip1_packet(data)
         if payload is None:
@@ -109,8 +100,8 @@ class TimerNode(Node):
             img_msg.encoding = '32FC1'
             img_msg.is_bigendian = False
             img_msg.step = msg_obj.width * 4
-            img_msg.data = np.array(msg_obj.range_image, dtype=np.float32).tobytes()
-            img_msg.data = (np.array(msg_obj.range_image, dtype=np.uint32) * msg_obj.image_pixel_scale).astype(np.float32).tobytes()
+            range_image = (np.array(msg_obj.image_pixel_data, dtype=np.uint32) * msg_obj.image_pixel_scale).astype(np.float32)
+            img_msg.data = range_image.tobytes()
             self.image_publisher_.publish(img_msg)
 
         

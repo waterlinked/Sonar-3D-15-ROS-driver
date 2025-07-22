@@ -1,25 +1,42 @@
-# Sonar-3D-15-ROS-driver
+# Sonar 3D-15 ROS Driver
 
-## Description
-The **sonar3d** package includes a node called **sonar_publisher**, which listens for UDP messages from the Sonar 3D-15. It publishes the received data as a **sensor_msgs/PointCloud2** message on the **sonar_point_cloud** topic, and as a **sensor_msgs/Image** message on the **sonar_range_image** topic.
+## Overview
 
+This package provides a ROS 2 driver for the **Water Linked Sonar 3D-15**, a real-time multibeam imaging sonar. The sonar streams 3D range images over UDP multicast, which are decoded and published as standard ROS messages:
 
-## How to use
+- 3D point clouds: `sensor_msgs/PointCloud2` on `/sonar_point_cloud`
+- Raw range images: `sensor_msgs/Image` on `/sonar_range_image`
 
-In the multicast_listner.py file, change from the fallback ip to the ip of the Sonar 3D-15 you want to use:
+The driver listens to RIP1 multicast packets, extracts and parses `RangeImage` protobuf messages, and converts the sonar data into formats usable by standard ROS visualization and processing tools.
 
-```python
-self.declare_parameter('IP', "192.168.194.96")
-```
+---
 
-Build the package:
+## Features
 
-```
+- Receives and decodes **RIP1** packets via UDP multicast
+- Publishes point clouds and range images at real-time rates
+- Automatically enables sonar acoustics on startup
+- Compatible with ROS 2 (tested on **Jazzy**)
+
+---
+
+## Topics
+
+| Topic               | Message Type              | Description                        |
+|--------------------|---------------------------|------------------------------------|
+| `/sonar_point_cloud` | `sensor_msgs/PointCloud2` | 3D point cloud in ROS frame        |
+| `/sonar_range_image` | `sensor_msgs/Image`       | Raw float32 range image (in meters) |
+
+---
+
+## Usage
+
+### 1. Clone and build the package
+
+```bash
+cd ~/ros2_ws/src
+git clone https://github.com/your-org/sonar3d-ros-driver.git
+cd ~/ros2_ws
 colcon build --packages-select sonar3d
-```
-
-Source your ros2 enviorment and run:
-
-```
-ros2 run sonar3d sonar_publisher
+source install/setup.bash
 ```
