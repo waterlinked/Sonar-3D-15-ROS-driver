@@ -33,7 +33,6 @@ class TimerNode(Node):
 
         self.sonar_ip = self.get_parameter('IP').get_parameter_value().string_value
         self.sonar_speed = self.get_parameter('speed').get_parameter_value().integer_value
-        # SONAR_IP = self.sonar_ip
 
         # Create a timer that calls the timer_callback every sample_time seconds 
         sample_time = 0.01          # sample time in seconds
@@ -60,17 +59,14 @@ class TimerNode(Node):
 
         self.get_logger().info(f"Listening for Sonar 3D-15 RIP1 packets on {MULTICAST_GROUP}:{PORT}...")
 
-        print("hei", SONAR_IP)
-
         if SONAR_IP != "":
             self.get_logger().info(f"Filtering packets from IP: {SONAR_IP}")
 
 
     def timer_callback(self):
-        print("hei2", SONAR_IP)
 
         data, addr = self.sock.recvfrom(BUFFER_SIZE)
-        print(addr)
+
         # If SONAR_IP is configured, and this doesn't match the known Sonar IP, skip it.
         if SONAR_IP != "" and addr[0] != SONAR_IP:
             return
