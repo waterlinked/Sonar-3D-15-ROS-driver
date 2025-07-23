@@ -68,15 +68,18 @@ class TimerNode(Node):
         data, addr = self.sock.recvfrom(BUFFER_SIZE)
 
         # If SONAR_IP is configured, and this doesn't match the known Sonar IP, skip it.
-        if SONAR_IP != "" and addr[0] != SONAR_IP:
+        if SONAR_IP != "" and addr[0] != (SONAR_IP and '192.168.194.96'):
+            self.get_logger().info(f"Received packet from {addr[0]}, but filtering out (not matching SONAR_IP: {SONAR_IP})")
             return
 
         payload = parse_rip1_packet(data)
         if payload is None:
+            self.get_logger().warning("Parsed payload is None, skipping packet.")
             return
         # Decode the Protobuf message
         result = decode_protobuf_packet(payload)
         if not result:
+            self.get_logger().warning("Decoding Protobuf packet failed, skipping packet.")
             return
 
         msg_type, msg_obj = result
