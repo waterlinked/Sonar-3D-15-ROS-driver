@@ -12,23 +12,20 @@ import socket
 import struct
 import numpy as np
 
-# Multicast group and port used by the Sonar 3D-15
-MULTICAST_GROUP = '224.0.0.96'
-PORT = 4747
-
-# Listen to all IPs by default, or set to a specific IP.
-SONAR_IP = "192.168.1.233"
-
-# The maximum possible packet size for Sonar 3D-15 data
-BUFFER_SIZE = 65535
-
-
 class TimerNode(Node):
+
+    # Multicast group and port used by the Sonar 3D-15
+    MULTICAST_GROUP = '224.0.0.96'
+    PORT = 4747
+
+    # The maximum possible packet size for Sonar 3D-15 data
+    BUFFER_SIZE = 65535
+
     def __init__(self):
         super().__init__('timer_node')
         
         # Declare parameters
-        self.declare_parameter('IP', SONAR_IP)#'192.168.194.96') #  <-- your sonar's IP here
+        self.declare_parameter('IP', '192.168.194.96')#  <-- your sonar's IP here, '192.168.194.96' is the fallback ip.
         self.declare_parameter('speed', 1491)    # setting this takes ~20s
 
         self.sonar_ip = self.get_parameter('IP').get_parameter_value().string_value
@@ -51,25 +48,25 @@ class TimerNode(Node):
         # Set up a UDP socket with multicast membership
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind(('', PORT))
+        self.sock.bind(('', self.PORT))
 
-        group = socket.inet_aton(MULTICAST_GROUP)
+        group = socket.inet_aton(self.MULTICAST_GROUP)
         mreq = struct.pack('4sL', group, socket.INADDR_ANY)
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
-        self.get_logger().info(f"Listening for Sonar 3D-15 RIP1 packets on {MULTICAST_GROUP}:{PORT}...")
+        self.get_logger().info(f"Listening for Sonar 3D-15 RIP1 packets on {self.MULTICAST_GROUP}:{self.PORT}...")
 
-        if SONAR_IP != "":
-            self.get_logger().info(f"Filtering packets from IP: {SONAR_IP}")
+        if self.sonar_ip != "":
+            self.get_logger().info(f"Filtering packets from IP: {self.sonar_ip}")
 
 
     def timer_callback(self):
 
-        data, addr = self.sock.recvfrom(BUFFER_SIZE)
+        data, addr = self.sock.recvfrom(self.BUFFER_SIZE)
 
         # If SONAR_IP is configured, and this doesn't match the known Sonar IP, skip it.
-        if SONAR_IP != "" and addr[0] != (SONAR_IP and '192.168.194.96'):
-            self.get_logger().info(f"Received packet from {addr[0]}, but filtering out (not matching SONAR_IP: {SONAR_IP})")
+        if self.sonar_ip != "" and addr[0] != self.sonar_ip and addr[0] != '192.168.194.96':
+            self.get_logger().info(f"Received packet from {addr[0]}, but filtering out (not matching SONAR_IP: {self.sonar_ip})")
             return
 
         payload = parse_rip1_packet(data)
