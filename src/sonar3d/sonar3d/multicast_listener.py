@@ -100,7 +100,6 @@ class TimerNode(Node):
 
             # Publish the PointCloud2 message
             self.pointcloud_publisher_.publish(cloud_msg)
-            self.get_logger().info(f'Published PointCloud2 message with {len(voxels)} points')
 
             # Publish the raw range image
             img_msg = Image()
