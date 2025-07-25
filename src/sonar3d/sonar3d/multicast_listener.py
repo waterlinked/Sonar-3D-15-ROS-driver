@@ -7,7 +7,7 @@ from sensor_msgs_py import point_cloud2
 from std_msgs.msg import Header
 
 from sonar3d.api.inspect_sonar_data import parse_rip1_packet, decode_protobuf_packet, rangeImageToXYZ
-from sonar3d.api.interface_sonar_api import set_acoustics, describe_response, set_multicast
+from sonar3d.api.interface_sonar_api import set_acoustics, describe_response, enable_multicast
 import socket
 import struct
 import numpy as np
@@ -40,7 +40,7 @@ class TimerNode(Node):
         self.pointcloud_publisher_ = self.create_publisher(PointCloud2, 'sonar_point_cloud', 10)
         self.image_publisher_ = self.create_publisher(Image, 'sonar_range_image', 10)
 
-        print("multicast response", set_multicast(self.sonar_ip))
+        print("multicast response", enable_multicast(self.sonar_ip))
         # Enable the acoustics on the sonar
         resp = set_acoustics(self.sonar_ip, True)
         self.get_logger().info(f'Enabling acoustics response: {describe_response(self.sonar_ip, resp)}')

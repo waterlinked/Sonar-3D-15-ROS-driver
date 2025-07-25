@@ -105,13 +105,21 @@ def set_acoustics(ip: str, value: bool) -> requests.models.Response:
 
     return post
 
-def set_multicast(ip: str) -> requests.models.Response:
+def enable_multicast(ip: str) -> requests.models.Response:
+    """
+    Enable the udp multicast of the sonar.
+    Returns the HTTP response of the posting.
+    """
     integration_api_payload["mode"] = "multicast"
     post = requests.post(f"http://{ip}/api/v1/integration/udp", json=integration_api_payload)
 
     return post
 
 def disable_multicast(ip: str):
+    """
+    Disable the udp multicast of the sonar.
+    Returns the HTTP response of the posting.
+    """
     integration_api_payload["mode"] = "disable"
     post = requests.post(f"http://{ip}/api/v1/integration/udp", json=integration_api_payload)
 
