@@ -15,7 +15,7 @@ The driver listens to RIP1 multicast packets, extracts and parses `RangeImage` p
 
 - Receives and decodes **RIP1** packets via UDP multicast
 - Publishes point clouds and range images at real-time rates
-- Automatically enables sonar acoustics on startup
+- Automatically enables sonar acoustics and udp multicast on startup
 - Compatible with ROS 2 (tested on **Jazzy**)
 
 ---
