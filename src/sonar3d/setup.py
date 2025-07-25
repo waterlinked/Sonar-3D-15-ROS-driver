@@ -17,8 +17,8 @@ setup(
     install_requires=[
         'setuptools',
         'protobuf==3.20.0',
-        'requests==2.32.3'
-        
+        'requests==2.32.3',
+        'numpy'
     ],
     zip_safe=True,
     maintainer='Water Linked',

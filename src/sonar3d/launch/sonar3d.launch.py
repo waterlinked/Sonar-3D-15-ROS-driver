@@ -9,7 +9,7 @@ def generate_launch_description():
             name='sonar_node',
             output='screen',
             parameters=[
-                {'IP': '192.168.194.96'},  # Change to your sonar IP, '192.168.194.96' is the fallback ip.
+                {'IP': '10.1.2.121'},  # Change to your sonar IP, '192.168.194.96' is the fallback ip.
                 {'speed': 1491}
             ]
         )

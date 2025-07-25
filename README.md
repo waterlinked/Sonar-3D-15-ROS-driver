@@ -55,14 +55,14 @@ Alternatively, you can modify the default parameter in `multicast_listener.py` d
 
 ```bash
 cd ~/ros2_ws
+source /opt/ros/jazzy/setup.bash
 colcon build --packages-select sonar3d
 source install/local_setup.bash
 ```
 
 ### 4. Run the package
 
-```bash'
-source /opt/ros/jazzy/setup.bash
+```bash
 ros2 launch sonar3d sonar3d.launch.py
 ```
 
