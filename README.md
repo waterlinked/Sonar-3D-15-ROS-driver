@@ -38,7 +38,16 @@ cd ~/ros2_ws/src
 git clone https://github.com/waterlinked/Sonar-3D-15-ROS-driver.git
 ```
 
-### 2. Set IP-address of Sonar 3D-15
+### 2. Install requirements
+
+Install requirements:
+
+```bash
+pip install -r requirements.txt
+```
+
+
+### 3. Set IP-address of Sonar 3D-15
 
 Change to your sonars IP-address in the sonar3d.launch.py file:
 
@@ -51,7 +60,7 @@ Alternatively, you can modify the default parameter in `multicast_listener.py` d
     self.declare_parameter('IP', '192.168.194.96')#  <-- your sonar's IP here, '192.168.194.96' is the fallback ip.
 ```
 
-### 3. Build the package from the root of your ros project
+### 4. Build the package from the root of your ros project
 
 ```bash
 cd ~/ros2_ws
@@ -60,13 +69,13 @@ colcon build --packages-select sonar3d
 source install/local_setup.bash
 ```
 
-### 4. Run the package
+### 5. Run the package
 
 ```bash
 ros2 launch sonar3d sonar3d.launch.py
 ```
 
-### 5. License
+### 6. License
 
 This package is distributed under the MIT License.
 
