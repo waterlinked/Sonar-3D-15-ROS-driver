@@ -35,7 +35,7 @@ The driver listens to RIP1 multicast packets, extracts and parses `RangeImage` p
 
 ```bash
 cd ~/ros2_ws/src
-git clone https://github.com/waterlinked/Sonar-3D-15-ROS-driver.git
+git clone --recurse-submodules https://github.com/waterlinked/Sonar-3D-15-ROS-driver.git
 ```
 
 ### 2. Install requirements
