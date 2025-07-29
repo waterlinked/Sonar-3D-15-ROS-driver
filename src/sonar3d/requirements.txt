@@ -1,0 +1,5 @@
+-r sonar3d/api/requirements.txt
+
+setuptools
+numpy
+

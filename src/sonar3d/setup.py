@@ -14,12 +14,6 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
     ],
-    install_requires=[
-        'setuptools',
-        'protobuf==3.20.0',
-        'requests==2.32.3',
-        'numpy'
-    ],
     zip_safe=True,
     maintainer='Water Linked',
     maintainer_email='support@waterlinked.com',
