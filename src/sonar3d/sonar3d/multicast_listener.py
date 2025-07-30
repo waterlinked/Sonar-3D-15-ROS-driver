@@ -25,7 +25,7 @@ class TimerNode(Node):
         super().__init__('timer_node')
         
         # Declare parameters
-        self.declare_parameter('IP', '192.168.194.96')#  <-- your sonar's IP here, '192.168.194.96' is the fallback ip.
+        self.declare_parameter('IP', '192.168.194.96')# '192.168.194.96' is the fallback ip, to change this, edit the launchfile.
         self.declare_parameter('speed', 1491)    # setting this takes ~20s
 
         self.sonar_ip = self.get_parameter('IP').get_parameter_value().string_value
@@ -65,8 +65,8 @@ class TimerNode(Node):
         data, addr = self.sock.recvfrom(self.BUFFER_SIZE)
 
         # If SONAR_IP is configured, and this doesn't match the known Sonar IP, skip it.
-        if self.sonar_ip != "" and addr[0] != self.sonar_ip and addr[0] != '192.168.194.96':
-            self.get_logger().info(f"Received packet from {addr[0]}, but filtering out (not matching SONAR_IP: {self.sonar_ip})")
+        if not (addr[0] == self.sonar_ip or addr[0] == '192.168.194.96'):
+            self.get_logger().info(f"Received packet from {addr[0]}. Data was received from an IP that does not match the declared SONAR_IP ({self.sonar_ip}), so the packet will be skipped.")
             return
 
         payload = parse_rip1_packet(data)
