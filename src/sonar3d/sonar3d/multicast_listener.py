@@ -40,10 +40,12 @@ class TimerNode(Node):
         self.pointcloud_publisher_ = self.create_publisher(PointCloud2, 'sonar_point_cloud', 10)
         self.image_publisher_ = self.create_publisher(Image, 'sonar_range_image', 10)
 
-        print("multicast response", enable_multicast(self.sonar_ip))
         # Enable the acoustics on the sonar
         resp = set_acoustics(self.sonar_ip, True)
         self.get_logger().info(f'Enabling acoustics response: {describe_response(self.sonar_ip, resp)}')
+
+        resp = enable_multicast(self.sonar_ip)
+        self.get_logger().info(f'Enabling multicast response: {describe_response(self.sonar_ip, resp)}')
 
         # Set up a UDP socket with multicast membership
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
