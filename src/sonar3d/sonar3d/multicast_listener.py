@@ -26,10 +26,10 @@ class TimerNode(Node):
         
         # Declare parameters
         self.declare_parameter('IP', '192.168.194.96')# '192.168.194.96' is the fallback ip, to change this, edit the launchfile.
-        self.declare_parameter('speed', 1491)    # setting this takes ~20s
+        self.declare_parameter('speed_of_sound', 1491)    # setting this takes ~20s
 
         self.sonar_ip = self.get_parameter('IP').get_parameter_value().string_value
-        self.sonar_speed = self.get_parameter('speed').get_parameter_value().integer_value
+        self.sonar_speed_of_sound = self.get_parameter('speed_of_sound').get_parameter_value().integer_value
 
         # Create a timer that calls the timer_callback every sample_time seconds 
         sample_time = 0.01          # sample time in seconds
