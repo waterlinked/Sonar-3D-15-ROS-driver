@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
 package_name = 'sonar3d'
 
@@ -10,12 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-    ],
-    install_requires=[
-        'setuptools',
-        'protobuf==3.20.0',
-        'requests==2.32.3'
-        
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
     ],
     zip_safe=True,
     maintainer='Water Linked',
@@ -25,7 +22,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'replay_file = sonar3d.file_replay:main',
             'sonar_publisher = sonar3d.multicast_listener:main'
         ],
     },

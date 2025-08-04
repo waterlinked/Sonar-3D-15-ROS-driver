@@ -1,2 +1,0 @@
-protobuf==4.24.2
-requests==2.32.3
